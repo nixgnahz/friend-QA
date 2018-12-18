@@ -1,0 +1,77 @@
+<style lang="less">
+.element {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 85%;
+  margin: 15px auto;
+  padding: 10rpx;
+  border-radius: 5px;
+  font-size: 30rpx;
+  background: #fff;
+  .name {
+    width: 120rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+  }
+  .inp {
+    width: calc(100% - 180rpx);
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: left;
+    input {
+      max-width: 95%;
+      height: 80rpx;
+      text-align: right;
+      text-indent: 10px;
+    }
+  }
+  .unit {
+    width: 60rpx;
+    height: 80rpx;
+    text-align: left;
+    line-height: 80rpx;
+  }
+}
+</style>
+
+<template>
+  <view class="element">
+    <view class="name" wx:if="{{tip}}">{{tip}}</view>
+    <view class="inp">
+      <input @input="getValue" type="{{type}}" value="{{value}}"></input>
+    </view>
+    <view class="unit">{{unit}}</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class InputItem extends wepy.component {
+    props = {
+      tip: {
+        type: String
+      },
+      type: {
+        type: String,
+        default: 'text'
+      },
+      value: {
+        twoWay: true,
+        type: [String, Number]
+      },
+      unit: {
+        type: String
+      }
+    }
+
+    methods = {
+      getValue (e) {
+        this.value = e.detail.value
+      }
+    }
+  }
+</script>

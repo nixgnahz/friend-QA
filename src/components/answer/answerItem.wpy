@@ -1,0 +1,66 @@
+<style lang="less">
+.yesOrNo {
+  width: 100%;
+  height: 120px;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  >view {
+    width: 40%;
+    height: 80px;
+    border: 2px solid #000;
+    padding: 0;
+    line-height: 0;
+    font-size: 40rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    image {
+      width: 45px;
+      height: 45px;
+    }
+    view {
+      font-size: 30rpx;
+      margin-bottom: 10px;
+    }
+  }
+  .no {
+    background: #eb4c30;
+  }
+  .yeah {
+    background: #8afb85;
+  }
+}
+</style>
+
+<template>
+  <view class="yesOrNo">
+    <view class="no" @tap="chooseNo">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/e/5/0/1/5c04d46e17d96.png"></image>
+      <view>假的</view>
+    </view>
+    <view class="yeah" @tap="chooseYes">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/8/0/8/4/5c04d4631a8a4.png"></image>
+      <view>真的</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class AnswerItem extends wepy.component {
+    methods = {
+      chooseNo () {
+        this.$emit('chooseAnswer', false)
+      },
+      chooseYes () {
+        this.$emit('chooseAnswer', true)
+      }
+    }
+  }
+</script>

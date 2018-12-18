@@ -1,0 +1,147 @@
+<style lang="less">
+.top {
+  margin-top: 25rpx;
+}
+.type {
+  width: 100%;
+  font-size: 25rpx;
+  .things {
+    width: 330rpx;
+    margin: 50rpx auto;
+    background: #fff;
+    border-radius: 40rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    image {
+      width: 40rpx;
+      height: 40rpx;
+      margin: 15rpx 35rpx;
+    }
+    .text {
+      margin-right: 50rpx;
+    }
+  }
+}
+</style>
+
+<template>
+  <block wx:if="{{showQus}}">
+    <process :length="10" :processIndex.sync="qusIndex"></process>
+    <view class="type">
+      <view class="things">
+        <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/5/0/1/d/5c04d40ea75f6.jpg"></image>
+        <view class="text">100%原创题库</view>
+      </view>
+    </view>
+    <question :question.sync="question"></question>
+    <next :btnText.sync="btnText"></next>
+  </block>
+  <pay wx:else :sheetid="sheetid"></pay>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Process from '@/components/setQus/process'
+  import Question from '@/components/setQus/question'
+  import Next from '@/components/setQus/next'
+  import Pay from '@/components/setQus/pay'
+  import fetch from '@/api/fetch.js'
+  import { toast } from '@/api/common.js'
+
+  export default class setQus extends wepy.page {
+    components = {
+      process: Process,
+      question: Question,
+      next: Next,
+      pay: Pay
+    }
+
+    selectedQus = []
+    questions = []
+    index = 0
+    sheetid = ''
+
+    data = {
+      showQus: true,
+      qusIndex: 1,
+      question: {},
+      btnText: '下一题'
+    }
+
+    onLoad () {
+      this.getQuestionData()
+    }
+
+    methods = {}
+
+    events = {
+      changeQus () {
+        this.setQus()
+      },
+      chooseAnswer (index) {
+        for (let item of this.question.answer) {
+          item.checked = false
+        }
+        this.question.answer[index].checked = true
+      },
+      submit () {
+        let status = ''
+        for (let item of this.question.answer) {
+          if (item.checked) status = item.status
+        }
+        if (!status) {
+          toast('您还没有作出选择呢～')
+          return
+        }
+        this.questions.splice(this.index, 1)
+        this.selectedQus.push({
+          id: this.question.id,
+          answer: status
+        })
+        if (this.qusIndex >= 10 && this.selectedQus.length >= 10) {
+          this.createSheet()
+          return
+        }
+        this.qusIndex = this.qusIndex + 1
+        this.setQus()
+        if (this.qusIndex > 9) {
+          this.btnText = '提交'
+        }
+      }
+    }
+
+    async getQuestionData () {
+      this.questions = await fetch('/dati/questions')
+      this.setQus()
+    }
+
+    setQus () {
+      this.index = Math.floor(Math.random() * this.questions.length)
+      const {id, question, yes, no} = this.questions[this.index]
+      let qus = {
+        id,
+        question,
+        answer: [
+          { status: 'yes', checked: false, text: yes },
+          { status: 'no', checked: false, text: no }
+        ]
+      }
+      this.question = qus
+      this.$apply()
+    }
+
+    createSheet () {
+      fetch(`/dati/sheets/create?session3rd=${this.$parent.globalData.session}`, {
+        questions: this.selectedQus
+      }).then((data) => {
+        this.sheetid = data.uuid
+        this.showQus = false
+        this.$apply()
+      }).catch(() => {
+        toast('创建失败')
+      })
+    }
+  }
+</script>

@@ -1,0 +1,91 @@
+<style lang="less">
+Page{
+  background: #ffdd2b;
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import login from '@/api/login.js'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index'
+    ],
+    window: {
+      'navigationBarTitleText': '好友问答',
+      'navigationBarBackgroundColor': '#ffdd2b',
+      'navigationBarTextStyle': 'white'
+    }
+  }
+
+  constructor () {
+    super()
+    this.use('promisify')
+  }
+
+  token = 'jyttq1510637876'
+
+  globalData = {
+    userInfo: {},
+    session: '',
+    openid: ''
+  }
+
+  onLaunch () {}
+
+  async getUserInfo () {
+    const data = await this.getLocalUserInfo()
+    if (!data) {
+      this.getRemoteUserInfo()
+    } else {
+      this.globalData.session = data.session_3rd
+      this.globalData.openid = data.openid
+      this.globalData.userInfo = data.userinfo
+    }
+  }
+
+  getLocalUserInfo () {
+    return new Promise((resolve, reject) => {
+      const data = wepy.getStorageSync('login')
+      resolve(data)
+    })
+  }
+
+  async getRemoteUserInfo () {
+    const res = await wepy.login()
+    if (res.code) {
+      login({
+        token: this.token,
+        code: res.code
+      }).then((res) => {
+        const data = res.data
+        this.globalData.session = data.session_3rd
+        this.globalData.openid = data.openid
+        this.globalData.userInfo = data.userinfo
+        this.setLocalUserInfo()
+      })
+    }
+  }
+
+  setLocalUserInfo () {
+    wepy.setStorage({
+      key: 'login',
+      data: {
+        session: this.globalData.session,
+        openid: this.globalData.openid,
+        userInfo: this.globalData.userInfo
+      }
+    })
+  }
+
+  async setUserInfo (userInfo) {
+    console.log(userInfo)
+  }
+}
+</script>

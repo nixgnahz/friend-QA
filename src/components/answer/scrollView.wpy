@@ -1,0 +1,42 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <scroll-view class="answersContent" scrollIntoView="{{toView}}" scrollWithAnimation="true" scrollY="true" style="height: {{height}}px">
+    <repeat for="{{dialog}}" key="index" index="index" item="item">
+      <view class="qus_items" id="{{'msg' + index}}">
+        <view class="item left_user" wx:if="{{item.type == 0}}">
+          <view class="avatar">
+            <image src="{{hostAvatar}}"></image>
+          </view>
+          <view class="content">{{item.content}}</view>
+        </view>
+        <view class="center_user" wx:if="{{item.type == 1}}">{{item.content}}</view>
+        <view class="item right_user" wx:if="{{item.type == 2}}">
+          <view class="content">{{item.content}}</view>
+          <view class="avatar">
+            <image src="{{visitAvatar}}"></image>
+          </view>
+        </view>
+      </view>
+    </repeat>
+  </scroll-view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class ScrollView extends wepy.component {
+    props = {
+      height: Number,
+      toView: {
+        twoWay: true,
+        default: 'msg0'
+      },
+      dialog: {
+        type: Array
+      }
+    }
+  }
+</script>
