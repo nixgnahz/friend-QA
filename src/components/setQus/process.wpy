@@ -1,45 +1,45 @@
 <style lang="less">
-.title {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  .little_title {
-    font-size: 30rpx;
+  .title {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    .index {
-      border: 2px solid #000;
-      border-radius: 50%;
-      height: 40rpx;
-      width: 40rpx;
-      line-height: 40rpx;
-      text-align: center;
-    }
-    .nochecked {
-      background: #fff;
-    }
-    .blank {
-      height: 2px;
-      width: 30rpx;
-      background: #000;
+    flex-direction: row;
+    justify-content: center;
+    .little_title {
+      font-size: 30rpx;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .index {
+        border: 2px solid #000;
+        border-radius: 50%;
+        height: 40rpx;
+        width: 40rpx;
+        line-height: 40rpx;
+        text-align: center;
+      }
+      .nochecked {
+        background: #fff;
+      }
+      .blank {
+        height: 2px;
+        width: 30rpx;
+        background: #000;
+      }
     }
   }
-}
 </style>
 
 <template>
-<view class="top">
-  <view class="title">
-    <repeat for="{{processArr}}" key="index" index="index">
-      <view class="little_title blank">
-        <view class="index {{index >= processIndex ? 'checked' : 'nochecked'}}">{{index + 1}}</view>
-        <view class="blank" wx:if="{{index < processArr.length - 1}}"></view>
-      </view>
-    </repeat>
+  <view class="top">
+    <view class="title">
+      <repeat for="{{processArr}}" key="index" index="index">
+        <view class="little_title blank">
+          <view class="index {{index >= processIndex ? 'checked' : 'nochecked'}}">{{index + 1}}</view>
+          <view class="blank" wx:if="{{index < processArr.length - 1}}"></view>
+        </view>
+      </repeat>
+    </view>
   </view>
-</view>
 </template>
 
 <script>

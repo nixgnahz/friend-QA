@@ -1,59 +1,57 @@
 <style lang="less">
-.notic {
-  width: 85%;
-  background: #fff;
-  margin: 0 auto;
-  border-radius: 10rpx;
-  padding-left: 20rpx;
-  margin-bottom: 20px;
-  view {
-    display: inline-block;
-    font-size: 28rpx;
-    margin-bottom: 10rpx;
-  }
-  text {
-    display: inline-block;
-    font-size: 28rpx;
-    margin-bottom: 10rpx;
-  }
-  >text {
-    color: #ff3967;
-  }
-  .avaregMoney {
-    color: red;
-  }
-}
-button.submit {
-  margin-top: 70rpx;
-  background: #fff;
-  color: #000;
-  width: 85%;
-  margin: 0 auto;
-}
-.finalMoney {
-  width: 85%;
-  margin: 0 auto;
-  color: red;
-  text-align: center;
-  margin-bottom: 20px;
-  .yuan {
-    font-size: 28rpx;
+  .notic {
+    width: 85%;
+    background: #fff;
+    margin: 0 auto;
+    border-radius: 10rpx;
+    padding-left: 20rpx;
+    margin-bottom: 20px;
+    view {
+      display: inline-block;
+      font-size: 28rpx;
+      margin-bottom: 10rpx;
+    }
     text {
-      font-size: 40rpx;
+      display: inline-block;
+      font-size: 28rpx;
+      margin-bottom: 10rpx;
+    }
+    >text {
+      color: #ff3967;
+    }
+    .avaregMoney {
+      color: red;
     }
   }
-  .server {
-    font-size: 26rpx;
-    margin-top: 25rpx;
+  button.submit {
+    margin-top: 70rpx;
+    background: #fff;
+    color: #000;
+    width: 85%;
+    margin: 0 auto;
   }
-}
+  .finalMoney {
+    width: 85%;
+    margin: 0 auto;
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+    .yuan {
+      font-size: 28rpx;
+      text {
+        font-size: 40rpx;
+      }
+    }
+    .server {
+      font-size: 26rpx;
+      margin-top: 25rpx;
+    }
+  }
 </style>
 
 <template>
   <view class="postAnswers">
-    <moneyInput tip="红包金额" type="digit" :value="money" unit="元"></moneyInput>
-    <countInput tip="红包个数" type="number" :value="count" unit="个"></countInput>
-    <rightInput tip="需要答对" type="number" :value="right" unit="题"></rightInput>
+    <slot name="input"></slot>
     <view class="notic">
       <view>
         目前红包人均
@@ -74,86 +72,18 @@ button.submit {
 
 <script>
   import wepy from 'wepy'
-  import { toast } from '@/api/common.js'
-  import InputItem from '@/components/setQus/inputItem'
 
   export default class Pay extends wepy.component {
     props = {
-      sheetid: {
-        type: String
-      }
-    }
-
-    components = {
-      moneyInput: InputItem,
-      countInput: InputItem,
-      rightInput: InputItem
-    }
-
-    uuid = ''
-
-    data = {
-      money: 1,
-      count: 1,
-      right: 5,
-      fee: 1
-    }
-
-    computed = {
-      totalMoney () {
-        return this.money * (100 + this.fee) / 100
-      },
-      averageMoney () {
-        return Math.floor(this.money * 100 / this.count) / 100 || 0
-      }
+      fee: [Number, String],
+      totalMoney: [Number, String],
+      averageMoney: [Number, String]
     }
 
     methods = {
       submit () {
-        if (parseInt(this.money) < 1 || parseInt(this.money) > 100) {
-          toast('红包金额只能在1-200之间哦～')
-          return
-        }
-        if (parseInt(this.count) < 1 || parseInt(this.count) > 20) {
-          toast('红包个数只能在1-20之间哦～')
-          return
-        }
-        if (parseInt(this.right) < 1 || parseInt(this.right) > 10) {
-          toast('答对数量只能在1-10之间哦～')
-          return
-        }
-        if (this.averageMoney < 0.3) {
-          toast('人均需要大于0.3元哦～')
-          return
-        }
-        this.createRedPocket()
+        this.$emit('createRedPocket')
       }
     }
-
-    createRedPocket () {
-      fetch(`/create?session3rd=${this.$parent.globalData.session}`, {
-        type: 'dati',
-        money: parseInt(this.money * 100),
-        moneyWithFee: parseInt(this.totalMoney * 100),
-        count: this.count,
-        customData: {
-          sheet: this.sheetid,
-          portrait: this.$parent.globalData.userInfo.avatar,
-          name: this.$parent.globalData.userInfo.name,
-          start: this.right
-        }
-      }).then((data) => {
-        this.uuid = data.uuid
-        this.payRedPocket()
-      }).catch((res) => {
-
-      })
-    }
-
-    payRedPocket () {}
-
-    paySuccess () {}
-
-    payFail () {}
   }
 </script>

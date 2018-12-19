@@ -1,54 +1,54 @@
 <style lang="less">
-scroll-view {
-  width: 100%;
-  font-size: 30rpx;
-  .item {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 35rpx;
-  }
-  .left_user {
-    margin-left: 20rpx;
-    justify-content: flex-start;
-    .avatar {
-      margin-right: 10rpx;
+  scroll-view {
+    width: 100%;
+    font-size: 30rpx;
+    .item {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 35rpx;
     }
-  }
-  .right_user {
-    margin-right: 20rpx;
-    justify-content: flex-end;
-    .avatar {
-      margin-left: 10rpx;
+    .left_user {
+      margin-left: 20rpx;
+      justify-content: flex-start;
+      .avatar {
+        margin-right: 10rpx;
+      }
     }
-  }
-  .avatar {
-    width: 90rpx;
-    height: 90rpx;
-    image {
+    .right_user {
+      margin-right: 20rpx;
+      justify-content: flex-end;
+      .avatar {
+        margin-left: 10rpx;
+      }
+    }
+    .avatar {
       width: 90rpx;
       height: 90rpx;
-      border-radius: 50%;
+      image {
+        width: 90rpx;
+        height: 90rpx;
+        border-radius: 50%;
+      }
+    }
+    .content {
+      max-width: 450rpx;
+      padding: 10rpx 25rpx;
+      background-color: #fff;
+      border-radius: 10rpx;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .center_user {
+      text-align: center;
+      height: 60rpx;
+      line-height: 60rpx;
+      margin: 0px auto 35rpx;
+      width: 250rpx;
+      border-radius: 10rpx;
+      background: rgba(255, 255, 255, 0.7);
     }
   }
-  .content {
-    max-width: 450rpx;
-    padding: 10rpx 25rpx;
-    background-color: #fff;
-    border-radius: 10rpx;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .center_user {
-    text-align: center;
-    height: 60rpx;
-    line-height: 60rpx;
-    margin: 0px auto 35rpx;
-    width: 250rpx;
-    border-radius: 10rpx;
-    background: rgba(255, 255, 255, 0.7);
-  }
-}
 </style>
 
 <template>
@@ -68,8 +68,6 @@ scroll-view {
   import Visit from '@/components/answer/visit'
 
   export default class Answer extends wepy.page {
-    config = {}
-
     components = {
       scrollView: ScrollView,
       answerItem: AnswerItem,
@@ -78,16 +76,12 @@ scroll-view {
       visit: Visit
     }
 
-    mixins = []
-
     timer = null
 
     data = {
       height: wepy.getSystemInfoSync().windowHeight - 120,
       dialog: []
     }
-
-    computed = {}
 
     onLoad () {
       this.startDialog()
@@ -110,10 +104,6 @@ scroll-view {
         })
         this.$apply()
       }, 750)
-    }
-
-    methods = {
-
     }
 
     events = {

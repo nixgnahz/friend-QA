@@ -1,29 +1,29 @@
 <style lang="less">
-.top {
-  margin-top: 25rpx;
-}
-.type {
-  width: 100%;
-  font-size: 25rpx;
-  .things {
-    width: 330rpx;
-    margin: 50rpx auto;
-    background: #fff;
-    border-radius: 40rpx;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    image {
-      width: 40rpx;
-      height: 40rpx;
-      margin: 15rpx 35rpx;
-    }
-    .text {
-      margin-right: 50rpx;
+  .top {
+    margin-top: 25rpx;
+  }
+  .type {
+    width: 100%;
+    font-size: 25rpx;
+    .things {
+      width: 330rpx;
+      margin: 50rpx auto;
+      background: #fff;
+      border-radius: 40rpx;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      image {
+        width: 40rpx;
+        height: 40rpx;
+        margin: 15rpx 35rpx;
+      }
+      .text {
+        margin-right: 50rpx;
+      }
     }
   }
-}
 </style>
 
 <template>
@@ -38,7 +38,13 @@
     <question :question.sync="question"></question>
     <next :btnText.sync="btnText"></next>
   </block>
-  <pay wx:else :sheetid="sheetid"></pay>
+  <pay wx:else :fee="fee" :totalMoney.sync="totalMoney" :averageMoney.sync="averageMoney">
+    <view slot="input">
+      <moneyInput tip="红包金额" type="digit" :value="money" unit="元"></moneyInput>
+      <countInput tip="红包个数" type="number" :value="count" unit="个"></countInput>
+      <rightInput tip="需要答对" type="number" :value="right" unit="题"></rightInput>
+    </view>
+  </pay>
 </template>
 
 <script>
@@ -47,34 +53,52 @@
   import Question from '@/components/setQus/question'
   import Next from '@/components/setQus/next'
   import Pay from '@/components/setQus/pay'
+  import InputItem from '@/components/setQus/inputItem'
   import fetch from '@/api/fetch.js'
+  import pay from '@/api/pay.js'
   import { toast } from '@/api/common.js'
 
-  export default class setQus extends wepy.page {
+  export default class SetQus extends wepy.page {
     components = {
       process: Process,
       question: Question,
       next: Next,
-      pay: Pay
+      pay: Pay,
+      moneyInput: InputItem,
+      countInput: InputItem,
+      rightInput: InputItem
     }
 
     selectedQus = []
     questions = []
     index = 0
     sheetid = ''
+    uuid = ''
+    waitFlag = 1
 
     data = {
       showQus: true,
       qusIndex: 1,
       question: {},
+      money: 1,
+      count: 1,
+      right: 5,
+      fee: 1,
       btnText: '下一题'
+    }
+
+    computed = {
+      totalMoney () {
+        return Math.ceil(this.money * (100 + this.fee)) / 100
+      },
+      averageMoney () {
+        return Math.floor(this.money * 100 / this.count) / 100 || 0
+      }
     }
 
     onLoad () {
       this.getQuestionData()
     }
-
-    methods = {}
 
     events = {
       changeQus () {
@@ -109,6 +133,25 @@
         if (this.qusIndex > 9) {
           this.btnText = '提交'
         }
+      },
+      createRedPocket () {
+        if (parseInt(this.money) < 1 || parseInt(this.money) > 100) {
+          toast('红包金额只能在1-200之间哦～')
+          return
+        }
+        if (parseInt(this.count) < 1 || parseInt(this.count) > 20) {
+          toast('红包个数只能在1-20之间哦～')
+          return
+        }
+        if (parseInt(this.right) < 1 || parseInt(this.right) > 10) {
+          toast('答对数量只能在1-10之间哦～')
+          return
+        }
+        if (this.averageMoney < 0.3) {
+          toast('人均需要大于0.3元哦～')
+          return
+        }
+        this.createOrder()
       }
     }
 
@@ -142,6 +185,60 @@
       }).catch(() => {
         toast('创建失败')
       })
+    }
+
+    createOrder () {
+      if (!this.waitFlag) return
+      this.waitFlag = false
+      fetch(`/create?session3rd=${this.$parent.globalData.session}`, {
+        type: 'dati',
+        money: parseInt(this.money * 100),
+        moneyWithFee: parseInt(this.totalMoney * 100),
+        count: this.count,
+        customData: {
+          sheet: this.sheetid,
+          portrait: this.$parent.globalData.userInfo.portrait,
+          name: this.$parent.globalData.userInfo.wechaname,
+          start: this.right
+        }
+      }).then((data) => {
+        this.uuid = data.uuid
+        this.payOrder()
+      }).catch((res) => {
+        this.payFail()
+      })
+    }
+
+    payOrder () {
+      pay(this.$parent.globalData.session, this.$parent.token, {
+        game_id: this.$parent.id,
+        type: 'new_red_packet',
+        other: this.uuid,
+        commit_id: this.$parent.commitid,
+        price: this.totalMoney
+      }).then((res) => {
+        const data = JSON.parse(res.data.data)
+        wepy.requestPayment({
+          timeStamp: data.timeStamp,
+          nonceStr: data.nonceStr,
+          package: data.package,
+          signType: 'MD5',
+          paySign: data.paySign
+        }).then(() => {
+          this.paySuccess()
+        }).catch(() => {
+          this.payFail()
+        })
+      })
+    }
+
+    paySuccess () {
+      wepy.redirectTo(`./share?ud=${this.uuid}`)
+    }
+
+    payFail () {
+      toast('支付失败')
+      this.waitFlag = true
     }
   }
 </script>

@@ -1,88 +1,88 @@
 <style lang="less">
-.conts {
-  border: 3px solid #000;
-  border-radius: 10px;
-  background: #fff;
-  margin: 0 auto;
-  width: 90%;
-  position: relative;
-  box-shadow: 0px 5px 3px #f4f4f4;
-  .about {
-    width: 90%;
+  .conts {
+    border: 3px solid #000;
+    border-radius: 10px;
+    background: #fff;
     margin: 0 auto;
-    height: 60px;
-    line-height: 60px;
-    font-size: 30rpx;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: space-between;
-    .change {
-      height: 55rpx;
-      width: 160rpx;
-      text-align: center;
-      border-radius: 55rpx;
-      line-height: 55rpx;
-      background: #fedc42;
+    width: 90%;
+    position: relative;
+    box-shadow: 0px 5px 3px #f4f4f4;
+    .about {
+      width: 90%;
+      margin: 0 auto;
+      height: 60px;
+      line-height: 60px;
       font-size: 30rpx;
-      border: 2px solid #000;
-      margin: 0px;
-    }
-  }
-  .item {
-    width: 90%;
-    height: 200rpx;
-    margin: 0 auto;
-    font-size: 30rpx;
-    .item_con {
-      width: 100%;
-      height: 140rpx;
-      background: #f4f4f4;
-      color: #000;
-      border-radius: 5px;
       display: flex;
       align-items: center;
       flex-direction: row;
-    }
-    .icon {
-      width: 50px;
-      view {
-        height: 20px;
+      justify-content: space-between;
+      .change {
+        height: 55rpx;
+        width: 160rpx;
+        text-align: center;
+        border-radius: 55rpx;
+        line-height: 55rpx;
+        background: #fedc42;
+        font-size: 30rpx;
         border: 2px solid #000;
-        margin: 0 auto;
-        flex: 1;
-        padding-right: 10px;
+        margin: 0px;
       }
-      image {
-        width: 15px;
-        height: 15px;
-        padding: 0px 15px;
+    }
+    .item {
+      width: 90%;
+      height: 200rpx;
+      margin: 0 auto;
+      font-size: 30rpx;
+      .item_con {
+        width: 100%;
+        height: 140rpx;
+        background: #f4f4f4;
+        color: #000;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .icon {
+        width: 50px;
+        view {
+          height: 20px;
+          border: 2px solid #000;
+          margin: 0 auto;
+          flex: 1;
+          padding-right: 10px;
+        }
+        image {
+          width: 15px;
+          height: 15px;
+          padding: 0px 15px;
+        }
       }
     }
   }
-}
 </style>
 
 <template>
-<view class="content">
-  <view class="conts">
-    <view class="about">
-      <view>{{question.question}}</view>
-      <view class="change" @tap="changeQus">换一题</view>
-    </view>
-    <repeat for="{{question.answer}}" key="index" index="index" item="item">
-      <view class="item" @tap="chooseAnswer({{index}})">
-        <view class="item_con">
-          <view class="icon">
-            <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/3/f/8/6/5c04d41aec497.png" wx:if="{{item.checked}}"></image>
-            <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/8/5/7/d/5c04d42445d2f.png" wx:else></image>
-          </view>
-          <view class="text">{{item.text}}</view>
-        </view>
+  <view class="content">
+    <view class="conts">
+      <view class="about">
+        <view>{{question.question}}</view>
+        <view class="change" @tap="changeQus">换一题</view>
       </view>
-    </repeat>
+      <repeat for="{{question.answer}}" key="index" index="index" item="item">
+        <view class="item" @tap="chooseAnswer({{index}})">
+          <view class="item_con">
+            <view class="icon">
+              <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/3/f/8/6/5c04d41aec497.png" wx:if="{{item.checked}}"></image>
+              <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/8/5/7/d/5c04d42445d2f.png" wx:else></image>
+            </view>
+            <view class="text">{{item.text}}</view>
+          </view>
+        </view>
+      </repeat>
+    </view>
   </view>
-</view>
 </template>
 
 <script>
