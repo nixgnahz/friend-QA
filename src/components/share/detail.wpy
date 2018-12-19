@@ -1,0 +1,48 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view class="mask">
+    <view class="answerContent">
+      <view class="close" @tap="hide">
+        <image src="http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/e/4/7/2/5c05d79c7db5e.png"></image>
+      </view>
+      <view class="title">我的出题详情</view>
+      <view class="info">
+        <view>红包金额：{{info.money / 100}}元</view>
+        <view>红包个数：{{info.count}}个</view>
+        <view>需要答对：{{info.right}}题</view>
+      </view>
+      <view class="answeritems">
+        <repeat for="{{myQuestions}}" key="index" index="index" item="item">
+          <view class="ansitems">
+            <view class="item_title">问：{{item.question}}</view>
+            <view class="item_ans">答：{{item.answer}}</view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Detail extends wepy.component {
+    props = {
+      info: {
+        type: Object
+      },
+      myQuestions: {
+        type: Array
+      }
+    }
+
+    methods = {
+      hide () {
+        this.$emit('hideDetail')
+      }
+    }
+  }
+</script>

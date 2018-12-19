@@ -1,0 +1,115 @@
+<style lang="less">
+  .walletIcon {
+    width: 246rpx;
+    height: 248rpx;
+    background-size: 100% 100%;
+    margin: 30rpx auto 50rpx;
+    background-image: url(http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/4/3/0/6/5c04d3c0a0616.png);
+  }
+  .moneyInfo {
+    text-align: center;
+    font-size: 28rpx;
+    .money {
+      margin: 50rpx auto;
+      .big {
+        font-size: 50rpx;
+      }
+    }
+    .notice {
+      color: #000;
+    }
+  }
+  .getMoney {
+    .getMoneyBtn {
+      width: 60%;
+      height: 75rpx;
+      line-height: 75rpx;
+      border-radius: 40rpx;
+      background: #fff;
+      color: #000;
+      font-size: 32rpx;
+      margin: 75rpx auto;
+    }
+    .text {
+      width: 80%;
+      margin: 0 auto;
+      view {
+        font-size: 24rpx;
+        margin: 15rpx auto;
+        color: #000;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="walletIcon"></view>
+  <view class="moneyInfo">
+    <view>钱包余额</view>
+    <view class="money">￥
+      <text class="big">{{money / 100}}</text>
+    </view>
+    <view class="notice">金额达到 2 元方可提现</view>
+  </view>
+  <view class="getMoney">
+    <button class="getMoneyBtn" @tap="withdraw">提现</button>
+    <view class="text">
+      <view>1.提现申请后将在72小时内打入您的微信钱包。</view>
+      <view>2.单笔提现最高200，每天3次。</view>
+      <view>3.非实名用户无法提现。</view>
+      <view>4.如果遇提现异常，请稍后再试或联系客服。</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '@/api/fetch.js'
+  import { toast } from '@/api/common.js'
+
+  export default class Wallet extends wepy.page {
+    config = {
+      'navigationBarTitleText': '我的钱包'
+    }
+
+    data = {
+      money: 0
+    }
+
+    onLoad () {
+      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
+        if (data.money) {
+          this.money = data.money
+          this.$apply()
+        }
+      })
+    }
+
+    methods = {
+      withdraw () {
+        if (this.money < 200) {
+          toast('提现金额至少2元')
+          return
+        }
+        if (this.money > 20000) {
+          toast('提现金额最多200元')
+          return
+        }
+        fetch(`/withdraw?session3rd=${this.$parent.globalData.session}&type=dati`, {
+          money: this.money,
+          from: this.$parent.id
+        }).then(() => {
+          this.money = 0
+          this.$apply()
+          toast('提现成功')
+        }).catch((res) => {
+          if (['2011', '2015', '2016'].indexOf(res.result) !== -1) {
+            toast(res.message)
+          } else {
+            toast('提现失败，请稍后再试')
+          }
+        })
+      }
+    }
+  }
+</script>

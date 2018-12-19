@@ -1,0 +1,87 @@
+<style lang="less">
+  .items {
+    width: 96%;
+    margin: 0 auto;
+    font-size: 28rpx;
+    padding: 2%;
+    height: 770rpx;
+    overflow: scroll;
+    .right {
+      font-size: 27rpx;
+      text-align: right;
+      .money {
+        margin-bottom: 10rpx;
+      }
+    }
+  }
+  .empty {
+    navigator {
+      width: 80%;
+      height: 85rpx;
+      line-height: 85rpx;
+      margin: 0px auto;
+      font-size: 32rpx;
+      background: #fede2b;
+      border-radius: 10rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="people"></view>
+  <view class="container">
+    <view class="items" wx:if="{{recordArr.length}}">
+      <repeat for="{{recordArr}}" key="index" index="index" item="item">
+        <view class="item" wx:if="{{item.pocket}}" @tap="navigate({{item.uuid}})">
+          <view class="avatar" style="background-image: url({{host.portrait}})"></view>
+          <view class="left">
+            <view class="name">{{host.name}}</view>
+            <view class="time">{{item.time}}</view>
+          </view>
+          <view class="right">
+            <view class="money">金额：{{item.pocket.money / 100}}元</view>
+            <view>数量：{{item.pocket.count}}个</view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+    <view class="empty" wx:else>
+      <view>暂时还没有出题记录哦。</view>
+      <navigator open-type="redirect" url="../setQus/index">点击出题</navigator>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '@/api/fetch'
+  import { navigate } from '@/api/common'
+
+  export default class QusRecord extends wepy.page {
+    data = {
+      recordArr: [],
+      host: {}
+    }
+
+    onLoad () {
+      this.getRecord()
+    }
+
+    getRecord () {
+      fetch(`/my?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
+        this.recordArr = data
+        this.host = {
+          name: this.$parent.globalData.userInfo.wechaname,
+          portrait: this.$parent.globalData.userInfo.portrait
+        }
+        this.$apply()
+      })
+    }
+
+    methods = {
+      navigate (uuid) {
+        navigate(`./share?ud=${uuid}`)
+      }
+    }
+  }
+</script>

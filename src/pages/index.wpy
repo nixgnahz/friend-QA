@@ -44,12 +44,9 @@
 
 <script>
   import wepy from 'wepy'
+  import { navigate } from '@/api/common'
 
   export default class Index extends wepy.page {
-    config = {
-      navigationBarTitleText: '好友问答'
-    }
-
     data = {
       isGetUserInfo: true,
       btnArr: [
@@ -83,9 +80,7 @@
     methods = {
       navigate (id) {
         if (!this.isGetUserInfo) {
-          wepy.navigateTo({
-            url: `./${id}`
-          })
+          navigate(`./${id}`)
         }
       }
     }

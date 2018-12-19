@@ -1,0 +1,76 @@
+<style lang="less">
+  .items {
+    width: 96%;
+    margin: 0 auto;
+    font-size: 28rpx;
+    padding: 2%;
+    height: 770rpx;
+    overflow: scroll;
+    .right {
+      width: 180rpx;
+      text-align: right;
+      font-size: 24rpx;
+      color: #ff0005;
+      text-align: right;
+      text {
+        font-size: 35rpx;
+      }
+    }
+    .underline {
+      text-decoration: underline;
+      font-size: 30rpx;
+      text-align: center;
+    }
+  }
+</style>
+
+<template>
+  <view class="people"></view>
+  <view class="container">
+    <view class="items" wx:if="{{recordArr.length}}">
+      <repeat for="{{recordArr}}" key="index" index="index" item="item">
+        <view class="item" wx:if="{{item.moneyType == 1 && item.pocket}}" @tap="navigate({{item.uuid}})">
+          <view class="avatar" style="background-image: url({{item.pocket.customData.portrait}})"></view>
+          <view class="left">
+            <view class="name">{{item.pocket.customData.name}}</view>
+            <view class="comment">答对{{item.pocket.customData.start}}题即可领红包</view>
+          </view>
+          <view class="right">
+            <text>{{item.money / 100}}</text> 元</view>
+        </view>
+      </repeat>
+    </view>
+    <view class="empty" wx:else>暂时没有你最了解的人哦</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '@/api/fetch'
+  import { navigate } from '@/api/common'
+
+  export default class AnsRecord extends wepy.page {
+    data = {
+      recordArr: []
+    }
+
+    onLoad () {
+      this.getRecord()
+    }
+
+    getRecord () {
+      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
+        if (data.records.length) {
+          this.recordArr = data.records
+          this.$apply()
+        }
+      })
+    }
+
+    methods = {
+      navigate (uuid) {
+        navigate(`./answer?ud=${uuid}`)
+      }
+    }
+  }
+</script>

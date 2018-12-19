@@ -1,0 +1,177 @@
+<style lang="less">
+  .poster {
+    margin: 0 auto;
+    z-index: 111;
+    background-size: cover;
+    width: 517rpx;
+    height: 516rpx;
+    position: relative;
+    background-image: url(http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/f/a/c/6/5c04d385049ae.png);
+    .over {
+      position: absolute;
+      top: 40rpx;
+      left: 108rpx;
+      image {
+        width: 301rpx;
+        height: 69rpx;
+      }
+    }
+    .reDraw {
+      font-size: 32rpx;
+      color: #fff;
+      background: #000;
+      z-index: 1111;
+      height: 60rpx;
+      line-height: 60rpx;
+      border-radius: 30rpx;
+      position: absolute;
+      bottom: 0px;
+      right: 50%;
+      transform: translateX(50%);
+    }
+  }
+  .btns {
+    width: 100%;
+    margin-top: 100rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    button {
+      width: 40%;
+      height: 90rpx;
+      line-height: 100rpx;
+      border: 2px solid #000;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-size: 32rpx;
+      &.share {
+        background: #eb4c30;
+      }
+      &.save {
+        background: #8afb85;
+      }
+      image {
+        width: 60rpx;
+        height: 60rpx;
+        margin: 10rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="new">
+    <view class="show" @tap="show">题目详情</view>
+    <view class="rePlay" @tap="navigate">回答详情</view>
+  </view>
+  <view class="poster">
+    <view class="over">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/1/b/6/b/5c04fab7d2f2d.png"></image>
+    </view>
+    <button class="reDraw" @tap="showPoster">生成海报</button>
+  </view>
+  <view class="btns">
+    <button class="save" @tap="showPoster">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/6/5/a/1/5c04d3ec5afbc.png"></image>
+      <view>保存海报</view>
+    </button>
+    <button class="share" openType="share">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/2/3/2/1/5c04d3f27b1b2.png"></image>
+      <view>分享好友</view>
+    </button>
+  </view>
+  <detail wx:if="{{showDetail}}" :info.sync="info" :myQuestions.sync="myQuestions"></detail>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '@/api/fetch'
+  import { navigate } from '@/api/common'
+  import drawPoster from '@/api/poster'
+  import Detail from '@/components/share/detail'
+
+  export default class Share extends wepy.page {
+    components = {
+      detail: Detail
+    }
+
+    data = {
+      showDetail: false,
+      info: {},
+      myQuestions: []
+    }
+
+    uuid = ''
+    poster = ''
+
+    onLoad (options) {
+      this.uuid = options.ud
+      this.getQuestionData()
+    }
+
+    methods = {
+      show () {
+        this.showDetail = true
+      },
+      navigate () {
+        navigate(`./answer?ud=${this.uuid}`)
+      },
+      showPoster () {
+        if (this.poster) {
+          this.previewPoster()
+          return
+        }
+        drawPoster(this.$parent.token, this.$parent.id, this.uuid, this.$parent.globalData.userInfo.portrait).then((url) => {
+          this.poster = url
+          this.previewPoster()
+        })
+      }
+    }
+
+    events = {
+      hideDetail () {
+        this.showDetail = false
+      }
+    }
+
+    async getQuestionData () {
+      const data = await fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}`)
+      const result = await Promise.all([
+        fetch('/dati/questions'),
+        fetch(`/dati/sheet?sheetId=${data.customData.sheet}&session3rd=${this.$parent.globalData.session}`)
+      ])
+      const [questionList, { questions }] = result
+      for (let myValue of questions) {
+        for (let value of questionList) {
+          if (value.id === myValue.id) {
+            myValue.answer = value[myValue.answer]
+          }
+        }
+      }
+      this.info = {
+        money: data.money,
+        count: data.count,
+        right: data.customData.start
+      }
+      this.myQuestions = questions
+      this.$apply()
+    }
+
+    previewPoster () {
+      wepy.previewImage({
+        urls: [this.poster]
+      })
+    }
+
+    onShareAppMessage () {
+      return {
+        title: `${this.$parent.globalData.userInfo.wechaname}把你选为了3个真朋友之一，请你来试试`,
+        imageUrl: 'http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/9/d/b/1/5c04d32431ae6.png',
+        path: `pages/answer?id=${this.$parent.id}&ud=${this.uuid}`
+      }
+    }
+  }
+</script>
