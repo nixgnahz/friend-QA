@@ -1,15 +1,126 @@
 <style lang="less">
-
+.userinfo {
+  position: relative;
+  background: #fff;
+  width: 80%;
+  height: 450rpx;
+  text-align: center;
+  border-radius: 10px;
+  .userinfo-avatar {
+    width: 100%;
+    height: 160rpx;
+    border-radius: 5px;
+    position: absolute;
+    top: -80rpx;
+    text-align: center;
+    image {
+      width: 150rpx;
+      height: 150rpx;
+      border-radius: 50%;
+      border: 2px solid #fede2b;
+    }
+  }
+  .loginBtn {
+    width: 100%;
+    margin-top: 100rpx;
+    .infos {
+      width: 100%;
+      height: 220rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text {
+        width: 100%;
+        height: 60rpx;
+        line-height: 60rpx;
+        text-align: center;
+        color: #000;
+        font-size: 13px;
+        font-weight: 700;
+        &:last-child {
+          color: #eb4c30;
+        }
+      }
+    }
+    .btn {
+      width: 350rpx;
+      margin: auto;
+      height: 70rpx;
+      font-size: 28rpx;
+      line-height: 70rpx;
+      text-align: center;
+      border-radius: 35px;
+      background: #f7c852;
+      color: #fff;
+    }
+  }
+}
 </style>
 
 <template>
-
+  <view class="mask">
+    <view class="userinfo">
+      <view class="userinfo-avatar" wx:if="{{visitAvatar}}">
+        <image src="{{visitAvatar}}"></image>
+      </view>
+      <view class="userinfo-avatar" wx:else>
+        <image src="http://wx.y1y.me/uploads/notoken/a/a/f/8/58d4f2ad0ac71.jpg"></image>
+      </view>
+      <view class="loginBtn">
+        <block wx:if="{{maskStatus == 1}}">
+           <view class="infos">
+              <text>你能判断我的话是</text>
+              <text>真的or假的吗？</text>
+              <text>答对可以领取红包哦～</text>
+            </view>
+            <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="btn">点击开始</button>
+        </block>
+        <block wx:if="{{maskStatus == 2}}">
+          <view class="infos">
+            <text>你来晚啦～</text>
+            <text>该红包已被领完</text>
+            <text>点击我也要玩创建好友问答红包</text>
+          </view>
+          <navigator class="btn" open-type="redirect" url="./index">我也要玩</navigator>
+        </block>
+        <block wx:if="{{maskStatus == 3}}">
+          <view class="infos">
+            <text>你来晚啦～</text>
+            <text>该红包已过期，无法再查看</text>
+            <text>点击我也要玩创建好友问答红包</text>
+          </view>
+          <navigator class="btn" open-type="redirect" url="./index">我也要玩</navigator>
+        </block>
+        <block wx:if="{{maskStatus == 4}}">
+          <view class="infos">
+            <text>领取失败</text>
+            <text>您对好友的了解程度还不够哦～</text>
+            <text>点击再试一次可以再次答题～</text>
+          </view>
+          <button class="btn" @tap='playAgain'>再试一次</button>
+        </block>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
   import wepy from 'wepy'
 
   export default class Mask extends wepy.component {
+    props = {
+      maskStatus: {
+        type: Number
+      }
+    }
 
+    methods = {
+      getUserInfo (e) {
+        this.$emit('getUserInfo', e)
+      },
+      playAgain () {
+        this.$emit('playAgain')
+      }
+    }
   }
 </script>

@@ -1,118 +1,401 @@
 <style lang="less">
-  scroll-view {
-    width: 100%;
-    font-size: 30rpx;
-    .item {
-      display: flex;
-      flex-direction: row;
-      margin-bottom: 35rpx;
-    }
-    .left_user {
-      margin-left: 20rpx;
-      justify-content: flex-start;
-      .avatar {
-        margin-right: 10rpx;
-      }
-    }
-    .right_user {
-      margin-right: 20rpx;
-      justify-content: flex-end;
-      .avatar {
-        margin-left: 10rpx;
-      }
-    }
-    .avatar {
-      width: 90rpx;
-      height: 90rpx;
+  .contents {
+    width: 80%;
+    padding: 35rpx 3%;
+    background: #fff;
+    border-radius: 15px;
+    border: 4px solid #000;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    .left, .right {
       image {
-        width: 90rpx;
-        height: 90rpx;
+        width: 120rpx;
+        height: 120rpx;
         border-radius: 50%;
       }
     }
-    .content {
-      max-width: 450rpx;
-      padding: 10rpx 25rpx;
-      background-color: #fff;
-      border-radius: 10rpx;
+    .center {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      flex-direction: column;
+      image {
+        &:first-child {
+          width: 240rpx;
+          height: 78rpx;
+        }
+        &:last-child {
+          margin-top: 25rpx;
+          width: 200rpx;
+          height: 67rpx;
+        }
+      }
+    }
+  }
+  .results {
+    width: 90%;
+    background: #fff;
+    margin: 0 auto 50rpx;
+    border-radius: 5px;
+    z-index: 100;
+    .title_ {
+      height: 100rpx;
+      line-height: 100rpx;
+      text-align: center;
+      font-size: 30rpx;
+      color: #fede2b;
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
     }
-    .center_user {
-      text-align: center;
-      height: 60rpx;
-      line-height: 60rpx;
-      margin: 0px auto 35rpx;
-      width: 250rpx;
-      border-radius: 10rpx;
-      background: rgba(255, 255, 255, 0.7);
+    .line {
+      background: #fede2b;
+      width: 100rpx;
+      height: 6rpx;
+    }
+    .title_item {
+      margin: 0px 25rpx;
+    }
+    .items {
+      padding: 0 25rpx;
+      font-size: 28rpx;
+    }
+    .right {
+      width: 120rpx;
+      text-align: right;
+      font-size: 24rpx;
+      color: #ff0005;
+      text {
+        font-size: 35rpx;
+      }
     }
   }
 </style>
 
 <template>
-  <scrollView :height="height" :dialog.sync="dialog"></scrollView>
-  <answerItem></answerItem>
-  <list></list>
-  <mask></mask>
-  <visit></visit>
+  <block wx:if="{{showHost}}">
+    <host :recordArr.sync="recordArr"></host>
+  </block>
+  <block wx:if="{{!showHost}}">
+    <block wx:if="{{showRank}}">
+      <visit
+        :recordArr.sync="recordArr"
+        :info.sync="info"
+        :hostAvatar.sync="hostAvatar"
+        :visitAvatar.sync="visitAvatar"
+      ></visit>
+    </block>
+    <block wx:if="{{!showRank}}">
+      <scrollView
+        :toView.sync="toView"
+        :height="height"
+        :dialog.sync="dialog"
+        :hostAvatar.sync="hostAvatar"
+        :visitAvatar.sync="visitAvatar"
+      ></scrollView>
+      <answerItem></answerItem>
+    </block>
+  </block>
+  <mask wx:if="{{maskStatus}}" :maskStatus.sync="maskStatus"></mask>
+  <block wx:if="{{showSuccess}}">
+    <success
+      :info.sync="info"
+      :visitAvatar.sync="visitAvatar"
+    ></success>
+  </block>
+  <block wx:if="{{showDetail}}">
+    <detail
+      :friend.sync="friend"
+      :friendQuestions.sync="friendQuestions"
+    ></detail>
+  </block>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import fetch from '@/api/fetch'
   import ScrollView from '@/components/answer/scrollView'
   import AnswerItem from '@/components/answer/answerItem'
-  import List from '@/components/answer/list'
   import Mask from '@/components/answer/mask'
+  import Success from '@/components/answer/success'
+  import Host from '@/components/answer/host'
   import Visit from '@/components/answer/visit'
+  import Detail from '@/components/answer/detail'
 
   export default class Answer extends wepy.page {
     components = {
       scrollView: ScrollView,
       answerItem: AnswerItem,
-      list: List,
       mask: Mask,
-      visit: Visit
+      host: Host,
+      visit: Visit,
+      detail: Detail,
+      success: Success
     }
 
     timer = null
+    uuid = ''
+    myQuestions = []
+    qusIndex = 0
+    answers = []
+    right = 0
+    waitFlag = 0
 
     data = {
       height: wepy.getSystemInfoSync().windowHeight - 120,
-      dialog: []
+      maskStatus: 0,
+      toView: 'msg0',
+      showHost: false,
+      showRank: false,
+      showSuccess: false,
+      showDetail: false,
+      visitAvatar: '',
+      hostAvatar: '',
+      info: {},
+      dialog: [],
+      recordArr: [],
+      friend: {},
+      friendQuestions: []
     }
 
-    onLoad () {
-      this.startDialog()
+    async onLoad (options) {
+      if (options.ud) {
+        this.uuid = options.ud
+      }
+      if (!this.$parent.session) {
+        await this.$parent.getUserInfo()
+      }
+      this.getData()
     }
 
     onUnload () {
       clearTimeout(this.timer)
+      this.myQuestions = []
+      this.answers = []
+      this.qusIndex = 0
+      this.waitFlag = 0
+    }
+
+    getData () {
+      fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.session}`).then((data) => {
+        this.judgeData(data)
+      }).catch(() => {
+        this.maskStatus = 3
+        this.$apply()
+      })
+    }
+
+    async judgeData (data) {
+      const { creatorWechatId, grabRecords, grab, recordsCount, count, paid, createTime } = data
+      const { portrait, start, sheet } = data.customData
+      this.hostAvatar = portrait
+      if (creatorWechatId === this.$parent.openid) {
+        this.showHost = true
+        this.recordArr = grabRecords
+        this.$apply()
+        this.getQuestionData(sheet)
+        return
+      }
+      if (this.$parent.userInfo) {
+        this.visitAvatar = this.$parent.userInfo.portrait
+      } else {
+        this.maskStatus = 1
+      }
+      if (grab) {
+        this.showRank = true
+        this.recordArr = grabRecords
+        this.info = {
+          right: grab.customData.right,
+          money: grab.customData.money
+        }
+        this.$apply()
+        return
+      }
+      const expire = this.expireTime(createTime)
+      if (!paid || expire > 72) {
+        this.maskStatus = 3
+        this.$apply()
+        return
+      }
+      if (recordsCount >= count) {
+        this.maskStatus = 2
+        this.$apply()
+        return
+      }
+      this.right = start
+      this.getQuestionData(sheet)
+    }
+
+    expireTime (time) {
+      const now = new Date().getTime()
+      const create = new Date(time).getTime()
+      return (now - create) / 1000 / 60 / 60
+    }
+
+    async getQuestionData (sheet) {
+      const result = await Promise.all([
+        fetch('/dati/questions'),
+        fetch(`/dati/sheet?sheetId=${sheet}&session3rd=${this.$parent.session}`)
+      ])
+      if (this.showHost) {
+        this.getHostQuestion(result)
+        return
+      }
+      this.putQuestionData(result)
+    }
+
+    getHostQuestion (result) {
+      const [questionList, { questions }] = result
+      for (let myValue of questions) {
+        for (let value of questionList) {
+          if (value.id === myValue.id) {
+            this.myQuestions.push(value)
+          }
+        }
+      }
+    }
+
+    putQuestionData (result) {
+      const [questionList, { questions }] = result
+      for (let myValue of questions) {
+        for (let value of questionList) {
+          if (value.id === myValue.id) {
+            myValue.question = value.yes
+          }
+        }
+      }
+      this.myQuestions = questions
+      this.startDialog()
     }
 
     startDialog () {
       this.dialog.push({
         type: 0,
-        content: `你是好友里最了解我的人吗？`
+        content: `${this.$parent.userInfo.wechaname}你是好友里最了解我的人吗？`
       })
       this.$apply()
       this.timer = setTimeout(() => {
         this.dialog.push({
           type: 0,
-          content: `请根据我的描述选择真假，答对题可以领取我的红包哦~`
+          content: `请根据我的描述选择真假，答对${this.right}题可以领取我的红包哦~`
         })
         this.$apply()
-      }, 750)
+        this.showQus()
+      }, 500)
+    }
+
+    showQus () {
+      if (this.answers.length === 10) {
+        this.checkAnswer()
+        return
+      }
+      this.qusIndex++
+      this.timer = setTimeout(() => {
+        this.dialog.push({
+          type: 1,
+          content: `第${this.qusIndex}题／共10题`
+        })
+        this.toView = `msg${2 * this.qusIndex + (this.qusIndex - 1)}`
+        this.$apply()
+        this.timer = setTimeout(() => {
+          this.dialog.push({
+            type: 0,
+            content: this.myQuestions[this.qusIndex - 1].question
+          })
+          this.toView = `msg${3 * this.qusIndex}`
+          this.waitFlag = 1
+          this.$apply()
+        }, 500)
+      }, 500)
+    }
+
+    checkAnswer () {
+      fetch(`/verify?uuid=${this.uuid}&session3rd=${this.$parent.session}`, {
+        answers: this.answers
+      }).then((data) => {
+        this.grabMoney(data)
+      }).catch(() => {
+        this.maskStatus = 4
+        this.$apply()
+      })
+    }
+
+    grabMoney ({ result, signature }) {
+      const right = result.filter((item) => item).length
+      fetch(`/grab?uuid=${this.uuid}&session3rd=${this.$parent.session}&signature=${signature}`, {
+        customData: {
+          answers: this.answers,
+          right: right
+        }
+      }).then((data) => {
+        this.showSuccess = true
+        this.info = {
+          right: right,
+          money: data
+        }
+        this.$apply()
+      }).catch((res) => {
+        this.maskStatus = 2
+        this.$apply()
+      })
     }
 
     events = {
       chooseAnswer (status) {
+        if (!this.waitFlag) return
+        this.waitFlag = 0
         this.dialog.push({
           type: 2,
           content: status ? '真的' : '假的'
         })
+        this.toView = `msg${2 * this.qusIndex + (this.qusIndex + 1)}`
+        this.answers.push(status ? 'yes' : 'no')
         this.$apply()
+        this.showQus()
+      },
+      getUserInfo (e) {
+        if (e.detail.userInfo) {
+          this.$parent.setUserInfo(e.detail.userInfo)
+          this.visitAvatar = e.detail.userInfo.avatarUrl
+          this.maskStatus = 0
+          this.$apply()
+        }
+      },
+      playAgain () {
+        this.answers = []
+        this.qusIndex = 0
+        wepy.redirectTo({
+          url: `./answer?ud=${this.uuid}`
+        })
+      },
+      hideSuccess () {
+        this.showSuccess = false
+        this.getData()
+      },
+      showDetail (index) {
+        this.showDetail = true
+        const data = this.recordArr[index]
+        let answers = []
+        for (let i = 0; i < this.myQuestions.length; i++) {
+          answers.push({
+            title: this.myQuestions[i].question,
+            content: this.myQuestions[i][data.customData.answers[i]]
+          })
+        }
+        this.friend = {
+          name: data.wechatName,
+          money: data.money,
+          right: data.customData.right
+        }
+        this.friendQuestions = answers
+        this.$apply()
+      },
+      hideDetail () {
+        this.showDetail = false
       }
     }
   }

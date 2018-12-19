@@ -1,15 +1,73 @@
 <style lang="less">
-
+  .btnGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 25rpx auto;
+    image {
+      width: 290rpx;
+      height: 93rpx;
+    }
+  }
 </style>
 
 <template>
-
+  <view class="people"></view>
+  <view class="contents">
+    <view class="left">
+      <image src="{{hostAvatar}}"></image>
+    </view>
+    <view class="center">
+      <image src="http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/2/7/7/5/5c063da4a329a.png"></image>
+      <image src="{{imgsArr[info.right]}}"></image>
+    </view>
+    <view class="right">
+      <image src="{{visitAvatar}}"></image>
+    </view>
+  </view>
+  <view class="btnGroup">
+    <navigator open-type="navigate" url="./setQus">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/9/e/6/7/5c04d49c0d258.png"></image>
+    </navigator>
+    <navigator open-type="navigate" url="./wallet">
+      <image src="http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/4/a/1/7/5c04d48c66215.png"></image>
+    </navigator>
+  </view>
+  <view class="results">
+    <view class="title_">
+      <view class="line"></view>
+      <view class="title_item">质检结果</view>
+      <view class="line"></view>
+    </view>
+    <view class="items" wx:if="{{recordArr.length}}">
+      <view class="item" wx:for="{{recordArr}}">
+        <view class="avatar" style="background-image: url({{item.portrait}})"></view>
+        <view class="left">
+          <view class="name">{{item.wechatName}}</view>
+          <view class="comment">{{commentsArr[item.customData.right]}}</view>
+        </view>
+        <view class="right">
+          <text>{{item.money / 100}}</text> 元</view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import { commentsArr, imgsArr } from '@/api/material'
 
   export default class Visit extends wepy.component {
+    props = {
+      recordArr: Array,
+      hostAvatar: String,
+      visitAvatar: String,
+      info: Object
+    }
 
+    data = {
+      commentsArr,
+      imgsArr
+    }
   }
 </script>

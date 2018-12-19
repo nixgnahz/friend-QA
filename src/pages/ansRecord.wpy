@@ -59,7 +59,7 @@
     }
 
     getRecord () {
-      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
+      fetch(`/wallet?session3rd=${this.$parent.session}&type=dati`).then((data) => {
         if (data.records.length) {
           this.recordArr = data.records
           this.$apply()

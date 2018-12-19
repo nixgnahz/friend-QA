@@ -71,7 +71,7 @@
 
     async onLoad () {
       await this.$parent.getUserInfo()
-      if (this.$parent.globalData.openid) {
+      if (this.$parent.userInfo.portrait) {
         this.isGetUserInfo = false
         this.$apply()
       }

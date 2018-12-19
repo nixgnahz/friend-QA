@@ -124,7 +124,7 @@
           this.previewPoster()
           return
         }
-        drawPoster(this.$parent.token, this.$parent.id, this.uuid, this.$parent.globalData.userInfo.portrait).then((url) => {
+        drawPoster(this.$parent.token, this.$parent.id, this.uuid, this.$parent.userInfo.portrait).then((url) => {
           this.poster = url
           this.previewPoster()
         })
@@ -138,10 +138,10 @@
     }
 
     async getQuestionData () {
-      const data = await fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}`)
+      const data = await fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.session}`)
       const result = await Promise.all([
         fetch('/dati/questions'),
-        fetch(`/dati/sheet?sheetId=${data.customData.sheet}&session3rd=${this.$parent.globalData.session}`)
+        fetch(`/dati/sheet?sheetId=${data.customData.sheet}&session3rd=${this.$parent.session}`)
       ])
       const [questionList, { questions }] = result
       for (let myValue of questions) {

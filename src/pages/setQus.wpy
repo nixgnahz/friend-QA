@@ -100,6 +100,13 @@
       this.getQuestionData()
     }
 
+    onUnload () {
+      this.selectedQus = []
+      this.questions = []
+      this.index = 0
+      this.waitFlag = 1
+    }
+
     events = {
       changeQus () {
         this.setQus()
@@ -176,7 +183,7 @@
     }
 
     createSheet () {
-      fetch(`/dati/sheets/create?session3rd=${this.$parent.globalData.session}`, {
+      fetch(`/dati/sheets/create?session3rd=${this.$parent.session}`, {
         questions: this.selectedQus
       }).then((data) => {
         this.sheetid = data.uuid
@@ -189,16 +196,16 @@
 
     createOrder () {
       if (!this.waitFlag) return
-      this.waitFlag = false
-      fetch(`/create?session3rd=${this.$parent.globalData.session}`, {
+      this.waitFlag = 0
+      fetch(`/create?session3rd=${this.$parent.session}`, {
         type: 'dati',
         money: parseInt(this.money * 100),
         moneyWithFee: parseInt(this.totalMoney * 100),
         count: this.count,
         customData: {
           sheet: this.sheetid,
-          portrait: this.$parent.globalData.userInfo.portrait,
-          name: this.$parent.globalData.userInfo.wechaname,
+          portrait: this.$parent.userInfo.portrait,
+          name: this.$parent.userInfo.wechaname,
           start: this.right
         }
       }).then((data) => {
@@ -210,7 +217,7 @@
     }
 
     payOrder () {
-      pay(this.$parent.globalData.session, this.$parent.token, {
+      pay(this.$parent.session, this.$parent.token, {
         game_id: this.$parent.id,
         type: 'new_red_packet',
         other: this.uuid,
@@ -233,12 +240,14 @@
     }
 
     paySuccess () {
-      wepy.redirectTo(`./share?ud=${this.uuid}`)
+      wepy.redirectTo({
+        url: `./share?ud=${this.uuid}`
+      })
     }
 
     payFail () {
       toast('支付失败')
-      this.waitFlag = true
+      this.waitFlag = 1
     }
   }
 </script>

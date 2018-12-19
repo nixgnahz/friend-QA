@@ -1,0 +1,74 @@
+<style lang="less">
+  .host {
+    .left {
+      .name, .comment {
+        width: 250rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    .btn_ {
+      width: 120rpx;
+      line-height: 60rpx;
+      text-align: center;
+      border-radius: 10rpx;
+      height: 60rpx;
+      font-size: 26rpx;
+      padding: 0;
+      background: #fede2b;
+      color: #000;
+      margin-left: 15rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="host">
+    <view class="people"></view>
+    <view class="results">
+      <view class="title_">
+        <view class="line"></view>
+        <view class="title_item">质检结果</view>
+        <view class="line"></view>
+      </view>
+      <view class="items" wx:if="{{recordArr.length}}">
+        <repeat for="{{recordArr}}" key="index" index="index" item="item">
+          <view class="item">
+            <view class="avatar" style="background-image: url({{item.portrait}})"></view>
+            <view class="left">
+              <view class="name">{{item.wechatName}}</view>
+              <view class="comment">{{commentsArr[item.customData.right]}}</view>
+            </view>
+            <view class="right">
+              <text>{{item.money / 100}}</text> 元
+            </view>
+            <view class="btn_" @tap="show({{index}})">看答案</view>
+          </view>
+        </repeat>
+      </view>
+      <view class="empty" wx:else>暂时没有最了解你的人哦</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { commentsArr } from '@/api/material'
+
+  export default class Host extends wepy.component {
+    props = {
+      recordArr: Array
+    }
+
+    data = {
+      commentsArr
+    }
+
+    methods = {
+      show (index) {
+        this.$emit('showDetail', index)
+      }
+    }
+  }
+</script>

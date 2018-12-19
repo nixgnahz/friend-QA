@@ -19,41 +19,41 @@
     margin-left: 5%;
     background: #fff;
     border-radius: 10px 10px 10px 10px;
-    .item {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      justify-content: space-between;
-      padding: 20rpx 0px;
-      .avatar {
-        width: 90rpx;
-        height: 90rpx;
-        border-radius: 50%;
-        background-size: cover;
-      }
-      .name {
-        width: 300rpx;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .time {
-        font-size: 24rpx;
-        color: #888;
-        margin-top: 10rpx;
-      }
-      .comment {
-        font-size: 24rpx;
-        color: #888;
-        margin-top: 10rpx;
-      }
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20rpx 0px;
+    .avatar {
+      width: 90rpx;
+      height: 90rpx;
+      border-radius: 50%;
+      background-size: cover;
     }
-    .empty {
-      height: 200rpx;
-      line-height: 200rpx;
-      text-align: center;
-      font-size: 26rpx;
+    .name {
+      width: 300rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .time {
+      font-size: 24rpx;
+      color: #888;
+      margin-top: 10rpx;
+    }
+    .comment {
+      font-size: 24rpx;
+      color: #888;
+      margin-top: 10rpx;
+    }
+  }
+  .empty {
+    height: 200rpx;
+    line-height: 200rpx;
+    text-align: center;
+    font-size: 26rpx;
   }
   .new {
     width: 95%;
@@ -182,23 +182,18 @@
     token = 'jyttq1510637876'
     commitid = '22499'
     id = 259822
-
-    globalData = {
-      userInfo: {},
-      session: '',
-      openid: ''
-    }
-
-    onLaunch () {}
+    userInfo = {}
+    session = ''
+    openid = ''
 
     async getUserInfo () {
       const data = await this.getLocalUserInfo()
       if (!data) {
         this.getRemoteUserInfo()
       } else {
-        this.globalData.session = data.session
-        this.globalData.openid = data.openid
-        this.globalData.userInfo = data.userInfo
+        this.session = data.session
+        this.openid = data.openid
+        this.userInfo = data.userInfo
       }
     }
 
@@ -217,9 +212,9 @@
           code: res.code
         }).then((res) => {
           const data = res.data
-          this.globalData.session = data.session_3rd
-          this.globalData.openid = data.openid
-          this.globalData.userInfo = data.userinfo
+          this.session = data.session_3rd
+          this.openid = data.openid
+          this.userInfo = data.userinfo
           this.setLocalUserInfo()
         })
       }
@@ -229,13 +224,15 @@
       wepy.setStorage({
         key: 'login',
         data: {
-          session: this.globalData.session,
-          openid: this.globalData.openid,
-          userInfo: this.globalData.userInfo
+          session: this.session,
+          openid: this.openid,
+          userInfo: this.userInfo
         }
       })
     }
 
-    async setUserInfo (userInfo) {}
+    async setUserInfo (userInfo) {
+      this.userInfo = userInfo
+    }
   }
 </script>

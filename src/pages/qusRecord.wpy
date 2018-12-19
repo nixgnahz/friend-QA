@@ -68,11 +68,11 @@
     }
 
     getRecord () {
-      fetch(`/my?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
+      fetch(`/my?session3rd=${this.$parent.session}&type=dati`).then((data) => {
         this.recordArr = data
         this.host = {
-          name: this.$parent.globalData.userInfo.wechaname,
-          portrait: this.$parent.globalData.userInfo.portrait
+          name: this.$parent.userInfo.wechaname,
+          portrait: this.$parent.userInfo.portrait
         }
         this.$apply()
       })
