@@ -1,7 +1,3 @@
-<style lang="less">
-
-</style>
-
 <template>
   <view class="mask">
     <view class="answerContent">
