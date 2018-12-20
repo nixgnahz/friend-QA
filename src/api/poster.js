@@ -1,13 +1,13 @@
 import wepy from "wepy";
 
-async function drawPoster(token, id, uuid, portrait) {
+async function drawPoster(token, uuid, portrait) {
   const res = await wepy.request({
     url: `https://2zhuji.cn/index.php?g=Wap&m=Wxa&a=get_param_qr&token=${token}`,
     method: 'POST',
     data: {
       width: 450,
       page: 'pages/answer',
-      scene: `id=${id}&ud=${uuid}`
+      scene: `uuid=${uuid}`
     },
     header: {
       'content-type': 'application/x-www-form-urlencoded'

@@ -102,16 +102,10 @@
   </block>
   <mask wx:if="{{maskStatus}}" :maskStatus.sync="maskStatus"></mask>
   <block wx:if="{{showSuccess}}">
-    <success
-      :info.sync="info"
-      :visitAvatar.sync="visitAvatar"
-    ></success>
+    <success :info.sync="info" :visitAvatar.sync="visitAvatar"></success>
   </block>
   <block wx:if="{{showDetail}}">
-    <detail
-      :friend.sync="friend"
-      :friendQuestions.sync="friendQuestions"
-    ></detail>
+    <detail :friend.sync="friend" :friendQuestions.sync="friendQuestions"></detail>
   </block>
 </template>
 
@@ -163,10 +157,10 @@
     }
 
     async onLoad (options) {
-      if (options.ud) {
-        this.uuid = options.ud
+      if (options.uuid) {
+        this.uuid = options.uuid
       }
-      if (!this.$parent.session) {
+      if (!this.$parent.globalData.session) {
         await this.$parent.getUserInfo()
       }
       this.getData()
@@ -181,7 +175,7 @@
     }
 
     getData () {
-      fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.session}`).then((data) => {
+      fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}`).then((data) => {
         this.judgeData(data)
       }).catch(() => {
         this.maskStatus = 3
@@ -189,19 +183,19 @@
       })
     }
 
-    async judgeData (data) {
+    judgeData (data) {
       const { creatorWechatId, grabRecords, grab, recordsCount, count, paid, createTime } = data
       const { portrait, start, sheet } = data.customData
       this.hostAvatar = portrait
-      if (creatorWechatId === this.$parent.openid) {
+      if (creatorWechatId === this.$parent.globalData.openid) {
         this.showHost = true
         this.recordArr = grabRecords
         this.$apply()
         this.getQuestionData(sheet)
         return
       }
-      if (this.$parent.userInfo) {
-        this.visitAvatar = this.$parent.userInfo.portrait
+      if (this.$parent.globalData.userInfo) {
+        this.visitAvatar = this.$parent.globalData.userInfo.portrait
       } else {
         this.maskStatus = 1
       }
@@ -239,7 +233,7 @@
     async getQuestionData (sheet) {
       const result = await Promise.all([
         fetch('/dati/questions'),
-        fetch(`/dati/sheet?sheetId=${sheet}&session3rd=${this.$parent.session}`)
+        fetch(`/dati/sheet?sheetId=${sheet}&session3rd=${this.$parent.globalData.session}`)
       ])
       if (this.showHost) {
         this.getHostQuestion(result)
@@ -275,7 +269,7 @@
     startDialog () {
       this.dialog.push({
         type: 0,
-        content: `${this.$parent.userInfo.wechaname}你是好友里最了解我的人吗？`
+        content: `${this.$parent.globalData.userInfo.wechaname}你是好友里最了解我的人吗？`
       })
       this.$apply()
       this.timer = setTimeout(() => {
@@ -314,7 +308,7 @@
     }
 
     checkAnswer () {
-      fetch(`/verify?uuid=${this.uuid}&session3rd=${this.$parent.session}`, {
+      fetch(`/verify?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}`, {
         answers: this.answers
       }).then((data) => {
         this.grabMoney(data)
@@ -326,7 +320,7 @@
 
     grabMoney ({ result, signature }) {
       const right = result.filter((item) => item).length
-      fetch(`/grab?uuid=${this.uuid}&session3rd=${this.$parent.session}&signature=${signature}`, {
+      fetch(`/grab?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}&signature=${signature}`, {
         customData: {
           answers: this.answers,
           right: right
@@ -359,7 +353,7 @@
       },
       getUserInfo (e) {
         if (e.detail.userInfo) {
-          this.$parent.setUserInfo(e.detail.userInfo)
+          this.$parent.setUserInfo(e.detail)
           this.visitAvatar = e.detail.userInfo.avatarUrl
           this.maskStatus = 0
           this.$apply()
@@ -369,7 +363,7 @@
         this.answers = []
         this.qusIndex = 0
         wepy.redirectTo({
-          url: `./answer?ud=${this.uuid}`
+          url: `./answer?uuid=${this.uuid}`
         })
       },
       hideSuccess () {

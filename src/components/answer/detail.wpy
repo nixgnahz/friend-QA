@@ -1,0 +1,47 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view class="mask">
+    <view class="answerContent">
+      <view class="close" @tap="hide">
+        <image src="http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/e/4/7/2/5c05d79c7db5e.png"></image>
+      </view>
+      <view class="title">查看{{friend.name}}的答案</view>
+      <view class="info">
+        <view>领到：{{friend.money / 100}}元</view>
+        <view>答对：{{friend.right}}题</view>
+      </view>
+      <view class="answeritems">
+        <repeat for="{{friendQuestions}}" key="index" index="index" item="item">
+          <view class="ansitems">
+            <view class="item_title">问：{{item.title}}</view>
+            <view class="item_ans">答：{{item.content}}</view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Detail extends wepy.component {
+    props = {
+      friend: {
+        type: Object
+      },
+      friendQuestions: {
+        type: Array
+      }
+    }
+
+    methods = {
+      hide () {
+        this.$emit('hideDetail')
+      }
+    }
+  }
+</script>

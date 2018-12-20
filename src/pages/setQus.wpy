@@ -40,9 +40,24 @@
   </block>
   <pay wx:else :fee="fee" :totalMoney.sync="totalMoney" :averageMoney.sync="averageMoney">
     <view slot="input">
-      <moneyInput tip="红包金额" type="digit" :value="money" unit="元"></moneyInput>
-      <countInput tip="红包个数" type="number" :value="count" unit="个"></countInput>
-      <rightInput tip="需要答对" type="number" :value="right" unit="题"></rightInput>
+      <moneyInput
+        tip="红包金额"
+        type="digit"
+        :value="money"
+        unit="元"
+      ></moneyInput>
+      <countInput
+        tip="红包个数"
+        type="number"
+        :value="count"
+        unit="个"
+      ></countInput>
+      <rightInput
+        tip="需要答对"
+        type="number"
+        :value="right"
+        unit="题"
+      ></rightInput>
     </view>
   </pay>
 </template>
@@ -183,7 +198,7 @@
     }
 
     createSheet () {
-      fetch(`/dati/sheets/create?session3rd=${this.$parent.session}`, {
+      fetch(`/dati/sheets/create?session3rd=${this.$parent.globalData.session}`, {
         questions: this.selectedQus
       }).then((data) => {
         this.sheetid = data.uuid
@@ -197,15 +212,15 @@
     createOrder () {
       if (!this.waitFlag) return
       this.waitFlag = 0
-      fetch(`/create?session3rd=${this.$parent.session}`, {
+      fetch(`/create?session3rd=${this.$parent.globalData.session}`, {
         type: 'dati',
         money: parseInt(this.money * 100),
         moneyWithFee: parseInt(this.totalMoney * 100),
         count: this.count,
         customData: {
           sheet: this.sheetid,
-          portrait: this.$parent.userInfo.portrait,
-          name: this.$parent.userInfo.wechaname,
+          portrait: this.$parent.globalData.userInfo.portrait,
+          name: this.$parent.globalData.userInfo.wechaname,
           start: this.right
         }
       }).then((data) => {
@@ -217,11 +232,10 @@
     }
 
     payOrder () {
-      pay(this.$parent.session, this.$parent.token, {
-        game_id: this.$parent.id,
+      pay(this.$parent.globalData.session, this.$parent.globalData.token, {
         type: 'new_red_packet',
         other: this.uuid,
-        commit_id: this.$parent.commitid,
+        commit_id: this.$parent.globalData.commitId,
         price: this.totalMoney
       }).then((res) => {
         const data = JSON.parse(res.data.data)
@@ -241,7 +255,7 @@
 
     paySuccess () {
       wepy.redirectTo({
-        url: `./share?ud=${this.uuid}`
+        url: `./share?uuid=${this.uuid}`
       })
     }
 

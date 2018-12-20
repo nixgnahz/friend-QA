@@ -1,4 +1,4 @@
-import wepy from 'wepy'
+import wepy from "wepy";
 
 const login = (requestData) => {
   return new Promise((resolve, reject) => {
@@ -19,4 +19,26 @@ const login = (requestData) => {
   })
 }
 
-export default login
+const setUserInfo = (requestData) => {
+  return new Promise((resolve, reject) => {
+    wepy.request({
+      url: 'https://2zhuji.cn/index.php?g=Wap&m=Wxaapi&a=getunionid',
+      method: 'GET',
+      data: requestData,
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }).then((res) => {
+      if (res.data) {
+        resolve(res)
+      } else {
+        reject(res)
+      }
+    })
+  })
+}
+
+export {
+  login,
+  setUserInfo
+}

@@ -77,7 +77,7 @@
     }
 
     onLoad () {
-      fetch(`/wallet?session3rd=${this.$parent.session}&type=dati`).then((data) => {
+      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
         if (data.money) {
           this.money = data.money
           this.$apply()
@@ -95,9 +95,8 @@
           toast('提现金额最多200元')
           return
         }
-        fetch(`/withdraw?session3rd=${this.$parent.session}&type=dati`, {
-          money: this.money,
-          from: this.$parent.id
+        fetch(`/withdraw?session3rd=${this.$parent.globalData.session}&type=dati`, {
+          money: this.money
         }).then(() => {
           this.money = 0
           this.$apply()

@@ -1,0 +1,79 @@
+<style lang="less">
+  .modal-box {
+    width: 550rpx;
+    height: 650rpx;
+    border-radius: 5px;
+    color: #fff;
+    background-size: cover;
+    background-image: url(http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/9/e/5/9/5c0637550470d.png);
+    .modal-avatar {
+      margin: 100rpx 200rpx 50rpx;
+      image {
+        width: 150rpx;
+        height: 150rpx;
+        border-radius: 50%;
+      }
+    }
+    .modal-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 27rpx;
+      .money {
+        text {
+          font-size: 45rpx;
+          margin-left: 5rpx;
+        }
+      }
+      .desc {
+        margin: 50rpx auto;
+      }
+    }
+    .btn {
+      width: 350rpx;
+      margin: auto;
+      height: 70rpx;
+      font-size: 28rpx;
+      line-height: 70rpx;
+      text-align: center;
+      border-radius: 35px;
+      background: #e16a6a;
+      background: #f7c852;
+      color: #fff;
+    }
+  }
+</style>
+
+<template>
+  <view class="mask">
+    <view class="modal-box">
+      <view class="modal-avatar">
+        <image src="{{visitAvatar}}"></image>
+      </view>
+      <view class="modal-title">
+        <view class="money">¥
+          <text>{{info.money / 100}}</text>
+        </view>
+        <text class="desc">红包已存入小程序余额</text>
+      </view>
+      <view class="btn" @tap="hide">查看大家的手气</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Success extends wepy.component {
+    props = {
+      visitAvatar: String,
+      info: Object
+    }
+
+    methods = {
+      hide () {
+        this.$emit('hideSuccess')
+      }
+    }
+  }
+</script>

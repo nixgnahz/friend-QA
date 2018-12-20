@@ -154,7 +154,7 @@
 <script>
   import wepy from 'wepy'
   import 'wepy-async-function'
-  import login from '@/api/login.js'
+  import { login, setUserInfo } from '@/api/login.js'
 
   export default class extends wepy.app {
     config = {
@@ -179,60 +179,46 @@
       this.use('promisify')
     }
 
-    token = 'jyttq1510637876'
-    commitid = '22499'
-    id = 259822
-    userInfo = {}
-    session = ''
-    openid = ''
-
-    async getUserInfo () {
-      const data = await this.getLocalUserInfo()
-      if (!data) {
-        this.getRemoteUserInfo()
-      } else {
-        this.session = data.session
-        this.openid = data.openid
-        this.userInfo = data.userInfo
-      }
+    globalData = {
+      token: 'jyttq1510637876',
+      commitId: '22499',
+      userInfo: {},
+      session: '',
+      openid: ''
     }
 
-    getLocalUserInfo () {
-      return new Promise((resolve, reject) => {
-        const data = wepy.getStorageSync('login')
-        resolve(data)
-      })
+    async getUserInfo () {
+      const data = await wepy.getStorageSync('login')
+      if (!data) {
+        await this.getRemoteUserInfo()
+      } else {
+        this.globalData.session = data.session
+        this.globalData.openid = data.openid
+        this.globalData.userInfo = data.userInfo
+      }
     }
 
     async getRemoteUserInfo () {
-      const res = await wepy.login()
-      if (res.code) {
-        login({
-          token: this.token,
-          code: res.code
-        }).then((res) => {
-          const data = res.data
-          this.session = data.session_3rd
-          this.openid = data.openid
-          this.userInfo = data.userinfo
-          this.setLocalUserInfo()
-        })
-      }
+      const { code } = await wepy.login()
+      const { data } = await login({ token: this.globalData.token, code: code })
+      this.globalData.session = data.session_3rd
+      this.globalData.openid = data.openid
+      this.globalData.userInfo = data.userinfo
+      this.setLocalUserInfo()
     }
 
     setLocalUserInfo () {
-      wepy.setStorage({
-        key: 'login',
-        data: {
-          session: this.session,
-          openid: this.openid,
-          userInfo: this.userInfo
-        }
+      wepy.setStorageSync('login', {
+        session: this.globalData.session,
+        openid: this.globalData.openid,
+        userInfo: this.globalData.userInfo
       })
     }
 
-    async setUserInfo (userInfo) {
-      this.userInfo = userInfo
+    async setUserInfo (res) {
+      const { data } = await setUserInfo({ session_3rd: this.globalData.session, encrypted: res.encryptedData, iv: res.iv })
+      this.globalData.userInfo = data
+      this.setLocalUserInfo()
     }
   }
 </script>

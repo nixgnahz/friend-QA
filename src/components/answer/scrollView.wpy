@@ -52,7 +52,13 @@
 </style>
 
 <template>
-  <scroll-view class="answersContent" scrollIntoView="{{toView}}" scrollWithAnimation="true" scrollY="true" style="height: {{height}}px">
+  <scroll-view
+    class="answersContent"
+    scrollIntoView="{{toView}}"
+    scrollWithAnimation="true"
+    scrollY="true"
+    style="height: {{height}}px"
+  >
     <repeat for="{{dialog}}" key="index" index="index" item="item">
       <view class="qus_items" id="{{'msg' + index}}">
         <view class="item left_user" wx:if="{{item.type == 0}}">

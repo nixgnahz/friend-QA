@@ -108,7 +108,7 @@
     poster = ''
 
     onLoad (options) {
-      this.uuid = options.ud
+      this.uuid = options.uuid
       this.getQuestionData()
     }
 
@@ -117,14 +117,14 @@
         this.showDetail = true
       },
       navigate () {
-        navigate(`./answer?ud=${this.uuid}`)
+        navigate(`./answer?uuid=${this.uuid}`)
       },
       showPoster () {
         if (this.poster) {
           this.previewPoster()
           return
         }
-        drawPoster(this.$parent.token, this.$parent.id, this.uuid, this.$parent.userInfo.portrait).then((url) => {
+        drawPoster(this.$parent.globalData.token, this.uuid, this.$parent.globalData.userInfo.portrait).then((url) => {
           this.poster = url
           this.previewPoster()
         })
@@ -138,10 +138,10 @@
     }
 
     async getQuestionData () {
-      const data = await fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.session}`)
+      const data = await fetch(`/get?uuid=${this.uuid}&session3rd=${this.$parent.globalData.session}`)
       const result = await Promise.all([
         fetch('/dati/questions'),
-        fetch(`/dati/sheet?sheetId=${data.customData.sheet}&session3rd=${this.$parent.session}`)
+        fetch(`/dati/sheet?sheetId=${data.customData.sheet}&session3rd=${this.$parent.globalData.session}`)
       ])
       const [questionList, { questions }] = result
       for (let myValue of questions) {
@@ -170,7 +170,7 @@
       return {
         title: `${this.$parent.globalData.userInfo.wechaname}把你选为了3个真朋友之一，请你来试试`,
         imageUrl: 'http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/9/d/b/1/5c04d32431ae6.png',
-        path: `pages/answer?id=${this.$parent.id}&ud=${this.uuid}`
+        path: `pages/answer?uuid=${this.uuid}`
       }
     }
   }

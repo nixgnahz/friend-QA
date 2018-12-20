@@ -71,7 +71,7 @@
 
     async onLoad () {
       await this.$parent.getUserInfo()
-      if (this.$parent.userInfo.portrait) {
+      if (this.$parent.globalData.userInfo) {
         this.isGetUserInfo = false
         this.$apply()
       }
@@ -87,9 +87,17 @@
 
     async getUserInfo (e) {
       if (e.detail.userInfo) {
-        await this.$parent.setUserInfo(e.detail.userInfo)
+        await this.$parent.setUserInfo(e.detail)
         this.isGetUserInfo = false
         this.$apply()
+      }
+    }
+
+    onShareAppMessage () {
+      return {
+        title: '友情大考验，谁最懂你？',
+        imageUrl: 'http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/9/d/b/1/5c04d32431ae6.png',
+        path: `pages/index`
       }
     }
   }

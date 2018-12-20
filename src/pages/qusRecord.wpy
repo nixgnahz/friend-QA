@@ -47,7 +47,7 @@
     </view>
     <view class="empty" wx:else>
       <view>暂时还没有出题记录哦。</view>
-      <navigator open-type="redirect" url="../setQus/index">点击出题</navigator>
+      <navigator open-type="redirect" url="./setQus">点击出题</navigator>
     </view>
   </view>
 </template>
@@ -68,11 +68,11 @@
     }
 
     getRecord () {
-      fetch(`/my?session3rd=${this.$parent.session}&type=dati`).then((data) => {
+      fetch(`/my?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
         this.recordArr = data
         this.host = {
-          name: this.$parent.userInfo.wechaname,
-          portrait: this.$parent.userInfo.portrait
+          name: this.$parent.globalData.userInfo.wechaname,
+          portrait: this.$parent.globalData.userInfo.portrait
         }
         this.$apply()
       })
@@ -80,7 +80,7 @@
 
     methods = {
       navigate (uuid) {
-        navigate(`./share?ud=${uuid}`)
+        navigate(`./share?uuid=${uuid}`)
       }
     }
   }
