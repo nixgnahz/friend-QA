@@ -348,7 +348,6 @@
         })
         this.toView = `msg${2 * this.qusIndex + (this.qusIndex + 1)}`
         this.answers.push(status ? 'yes' : 'no')
-        this.$apply()
         this.showQus()
       },
       getUserInfo (e) {
@@ -386,7 +385,6 @@
           right: data.customData.right
         }
         this.friendQuestions = answers
-        this.$apply()
       },
       hideDetail () {
         this.showDetail = false
