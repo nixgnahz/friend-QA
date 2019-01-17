@@ -19,7 +19,7 @@
     </view>
     <view class="center">
       <image src="http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/2/7/7/5/5c063da4a329a.png"></image>
-      <image src="{{imgsArr[info.right]}}"></image>
+      <image src="{{ImgsArr[info.right]}}"></image>
     </view>
     <view class="right">
       <image src="{{visitAvatar}}"></image>
@@ -44,7 +44,7 @@
         <view class="avatar" style="background-image: url({{item.portrait}})"></view>
         <view class="left">
           <view class="name">{{item.wechatName}}</view>
-          <view class="comment">{{commentsArr[item.customData.right]}}</view>
+          <view class="comment">{{CommentsArr[item.customData.right]}}</view>
         </view>
         <view class="right">
           <text>{{item.money / 100}}</text> 元</view>
@@ -55,7 +55,7 @@
 
 <script>
   import wepy from 'wepy'
-  import { commentsArr, imgsArr } from '@/api/material'
+  import { CommentsArr, ImgsArr } from '@/api/material'
 
   export default class Visit extends wepy.component {
     props = {
@@ -66,8 +66,8 @@
     }
 
     data = {
-      commentsArr,
-      imgsArr
+      CommentsArr,
+      ImgsArr
     }
   }
 </script>

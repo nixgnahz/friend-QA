@@ -38,7 +38,7 @@
             <view class="avatar" style="background-image: url({{item.portrait}})"></view>
             <view class="left">
               <view class="name">{{item.wechatName}}</view>
-              <view class="comment">{{commentsArr[item.customData.right]}}</view>
+              <view class="comment">{{CommentsArr[item.customData.right]}}</view>
             </view>
             <view class="right">
               <text>{{item.money / 100}}</text> 元
@@ -54,7 +54,7 @@
 
 <script>
   import wepy from 'wepy'
-  import { commentsArr } from '@/api/material'
+  import { CommentsArr } from '@/api/material'
 
   export default class Host extends wepy.component {
     props = {
@@ -62,7 +62,7 @@
     }
 
     data = {
-      commentsArr
+      CommentsArr
     }
 
     methods = {

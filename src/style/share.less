@@ -1,0 +1,62 @@
+.poster {
+  margin: 0 auto;
+  z-index: 111;
+  background-size: cover;
+  width: 517rpx;
+  height: 516rpx;
+  position: relative;
+  background-image: url(http://wx.11babay.cn/uploads/Q/Qdh4nAHglce5Bkn7PTKf/f/a/c/6/5c04d385049ae.png);
+  .over {
+    position: absolute;
+    top: 40rpx;
+    left: 108rpx;
+    image {
+      width: 301rpx;
+      height: 69rpx;
+    }
+  }
+  .reDraw {
+    font-size: 32rpx;
+    color: #fff;
+    background: #000;
+    z-index: 1111;
+    height: 60rpx;
+    line-height: 60rpx;
+    border-radius: 30rpx;
+    position: absolute;
+    bottom: 0px;
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+.btns {
+  width: 100%;
+  margin-top: 100rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  button {
+    width: 40%;
+    height: 90rpx;
+    line-height: 100rpx;
+    border: 2px solid #000;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 32rpx;
+    &.share {
+      background: #eb4c30;
+    }
+    &.save {
+      background: #8afb85;
+    }
+    image {
+      width: 60rpx;
+      height: 60rpx;
+      margin: 10rpx;
+    }
+  }
+}

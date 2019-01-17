@@ -1,4 +1,4 @@
-const commentsArr = [
+const CommentsArr = [
   '你走吧，我不认识你',
   '我们俩算是白认识了一场',
   '你不懂我，我不怪你',
@@ -12,7 +12,7 @@ const commentsArr = [
   '你是不是喜欢我'
 ]
 
-const imgsArr = [
+const ImgsArr = [
   'http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/9/2/7/3/5c063d79c6e4b.png',
   'http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/7/c/d/0/5c0646572969d.png',
   'http://wx.11babay.cn/uploads/p/pjNjl1htjHPnciglS6aC/f/8/0/3/5c06465f347a5.png',
@@ -27,6 +27,6 @@ const imgsArr = [
 ]
 
 export {
-  commentsArr,
-  imgsArr
+  CommentsArr,
+  ImgsArr
 }
