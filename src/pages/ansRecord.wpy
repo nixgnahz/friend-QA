@@ -58,13 +58,12 @@
       this.getRecord()
     }
 
-    getRecord () {
-      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
-        if (data.records.length) {
-          this.recordArr = data.records
-          this.$apply()
-        }
-      })
+    async getRecord () {
+      const data = await fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`)
+      if (data.records.length) {
+        this.recordArr = data.records
+        this.$apply()
+      }
     }
 
     methods = {

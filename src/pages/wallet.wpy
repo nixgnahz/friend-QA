@@ -36,13 +36,12 @@
       money: 0
     }
 
-    onLoad () {
-      fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
-        if (data.money) {
-          this.money = data.money
-          this.$apply()
-        }
-      })
+    async onLoad () {
+      const data = await fetch(`/wallet?session3rd=${this.$parent.globalData.session}&type=dati`)
+      if (data.money) {
+        this.money = data.money
+        this.$apply()
+      }
     }
 
     methods = {

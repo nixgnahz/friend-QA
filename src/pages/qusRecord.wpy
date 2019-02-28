@@ -67,15 +67,14 @@
       this.getRecord()
     }
 
-    getRecord () {
-      fetch(`/my?session3rd=${this.$parent.globalData.session}&type=dati`).then((data) => {
-        this.recordArr = data
-        this.host = {
-          name: this.$parent.globalData.userInfo.wechaname,
-          portrait: this.$parent.globalData.userInfo.portrait
-        }
-        this.$apply()
-      })
+    async getRecord () {
+      const data = await fetch(`/my?session3rd=${this.$parent.globalData.session}&type=dati`)
+      this.recordArr = data
+      this.host = {
+        name: this.$parent.globalData.userInfo.wechaname,
+        portrait: this.$parent.globalData.userInfo.portrait
+      }
+      this.$apply()
     }
 
     methods = {

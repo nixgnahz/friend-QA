@@ -59,15 +59,14 @@
       navigate () {
         navigate(`./answer?uuid=${this.uuid}`)
       },
-      showPoster () {
+      async showPoster () {
         if (this.poster) {
           this.previewPoster()
           return
         }
-        drawPoster(this.$parent.globalData.token, this.uuid, this.$parent.globalData.userInfo.portrait).then((url) => {
-          this.poster = url
-          this.previewPoster()
-        })
+        const url = await drawPoster(this.$parent.globalData.token, this.uuid, this.$parent.globalData.userInfo.portrait)
+        this.poster = url
+        this.previewPoster()
       }
     }
 
